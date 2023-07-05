@@ -1,27 +1,24 @@
-const express = require('express');
+import express from 'express';
+import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import { handleError, notFound } from './middleware.js';
+
+dotenv.config();
 const app = express();
-const port = 3000;
-const isLocal = true;
+app.use(express.json());
+app.use(bodyParser.json({ limit: "30mb", extended: true }));
 
-app.get('/', (req, res) => {
-    res.json({
-		message: "✨ 👋🌏 ✨",
-		stage: process.env.NODE_ENV,
-	});
-});
+app.use(handleError);
+app.use(notFound);
 
-app.get("/ping", (req, res) => {
-	res.json({
-		message: "🏓",
-	});
-});
+const PORT = process.env.PORT || 6001;
 
-if (isLocal) {
-	//local host
-	app.listen(port, () => {
-		console.log(`Example app listening on port ${port}`)
+await mongoose
+	.connect(process.env.MONGO_URL, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true,
 	});
-} else {
-	//for lambda export
-	module.exports = app;
-}
+
+const server = app.listen(PORT, () => console.log(`Server Port: ${PORT}`));
+export default server;
