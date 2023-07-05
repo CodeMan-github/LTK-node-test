@@ -3,11 +3,14 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import { handleError, notFound } from './middleware.js';
+import loanRoutes from './routes/loans.js';
 
 dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
+
+app.use("/loans", loanRoutes);
 
 app.use(handleError);
 app.use(notFound);
